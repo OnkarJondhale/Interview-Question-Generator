@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Groq from "groq-sdk";
 import './App.css';
 
 import Input from './Components/Input';
@@ -6,11 +7,47 @@ import Output from "./Components/Output"
 
 function App() {
 
-  const [data,setData] = useState('');
+  const [llmOutput,setLlmOutput] = useState('');
 
-  function getData(response)
+  function formPrompt(val, topics, jobTypes) {
+    const { numberOfQuestions, jobRoles, jobDescription, difficulty, additionalNotes } = val;
+    const topics_str = Array.isArray(topics) ? topics.join(", ") : "";
+    const jobTypes_str = Array.isArray(jobTypes) ? jobTypes.join(", ") : "";
+    const prompt = `Generate ${numberOfQuestions} ${jobTypes_str} interview questions for the job role '${jobRoles}' with the job description '${jobDescription}' on the topics '${topics_str}' with a difficulty level of ${difficulty}. ${additionalNotes} and Number each question.`;
+    return prompt;
+  }
+  
+  async function getData(val,topics,jobTypes)
   {
-    setData(response);
+    const question = formPrompt(val,topics,jobTypes);
+    console.log(question);
+    const response = await getResponse(question);
+    console.log(response);
+    setLlmOutput(response);
+  }
+
+  async function getResponse(question)
+  {
+      const groq = new Groq({ apiKey: import.meta.env.VITE_API_KEY, dangerouslyAllowBrowser: true });
+      const completion = await groq.chat.completions.create({
+      messages: [
+          {
+          role: "user",
+          content: question,
+          },
+      ],
+      model: "llama-3.3-70b-versatile",
+      });
+
+      const res = completion.choices[0].message.content;
+      const response_lines = res.split('\n');
+
+      const filtered_lines = response_lines.filter(line => {
+        const trimmedLine = line.trim();
+        return trimmedLine && !isNaN(trimmedLine.split('.')[0]);
+      });
+
+      return filtered_lines;
   }
 
   return (
@@ -21,7 +58,7 @@ function App() {
         </h1>
         <Input getData={getData}/>
       </div>
-      <Output data={data}/>
+      <Output llmOutput={llmOutput}/>
     </div>
   );
 }

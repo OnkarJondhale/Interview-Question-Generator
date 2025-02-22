@@ -10,7 +10,7 @@ function Input(props)
   const [jobTypes, setJobTypes] = useState([]);
 
   const onSubmit = (data) => {
-    props.getData(data);
+    props.getData(data,topics,jobTypes);
   };
 
   const handleTopicsChange = (e) => {
