@@ -7,7 +7,7 @@ import Output from "./Components/Output"
 
 function App() {
 
-  const [llmOutput,setLlmOutput] = useState('');
+  const [llmOutput,setLlmOutput] = useState([]);
 
   function formPrompt(val, topics, jobTypes) {
     const { numberOfQuestions, jobRoles, jobDescription, difficulty, additionalNotes } = val;

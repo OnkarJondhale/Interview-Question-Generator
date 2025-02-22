@@ -1,6 +1,9 @@
 import React from "react";
 
 function Output({ llmOutput }) {
+
+  console.log(llmOutput,typeof(llmOutput));
+
   return (
     <div className="w-full max-w-4xl mx-auto backdrop-blur-xl rounded-xl shadow-2xl relative overflow-hidden border border-white/10 mt-8">
       <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-purple-600/10 to-pink-600/10" />
